@@ -1,0 +1,391 @@
+%**************************************************************************
+%*
+%*  Paper: ``INSTRUCTIONS FOR AUTHORS OF LATEX DOCUMENTS''
+%*
+%*  Publication: 2031 Simulation Workshop Proceedings template 
+%*
+%*  Filename: sw23paper.tex
+%*
+%*  Date: June 15, 2022
+%*
+%*  Adapted from WSC Proceedings Author Kit
+%*
+%*  All files need the following
+\input{sw23style.tex}     % download from author kit.  Style files for SW formatting. Don't remove this line - required for generating the final paper!
+
+\documentclass{swpaperproc}
+\usepackage{latexsym}
+%\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{mathptmx}
+
+%
+%****************************************************************************
+% AUTHOR: You may want to use some of these packages. (Optional)
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+\usepackage{amsthm}
+
+%****************************************************************************
+
+\usepackage{listings}
+
+%
+%****************************************************************************
+% AUTHOR: If you do not wish to use hyperlinks, then just comment
+% out the hyperref usepackage commands below.
+
+%% This version of the command is used if you use pdflatex. In this case you
+%% cannot use ps or eps files for graphics, but pdf, jpeg, png etc are fine.
+
+\usepackage[pdftex,colorlinks=true,urlcolor=blue,citecolor=black,anchorcolor=black,linkcolor=black]{hyperref}
+
+%% The next versions of the hyperref command are used if you adopt the
+%% outdated latex-dvips-ps2pdf route in generating your pdf file. In
+%% this case you can use ps or eps files for graphics, but not pdf, jpeg, png etc.
+%% However, the final pdf file should embed all fonts required which means that you have to use file
+%% formats which can embed fonts. Please note that the final PDF file will not be generated on your computer!
+%% If you are using WinEdt or PCTeX, then use the following. If you are using
+%% Y&Y TeX then replace "dvips" with "dvipsone"
+
+%%\usepackage[dvips,colorlinks=true,urlcolor=blue,citecolor=black,%
+%% anchorcolor=black,linkcolor=black]{hyperref}
+%****************************************************************************
+
+
+
+		
+
+
+
+%
+%****************************************************************************
+%*
+%* AUTHOR: YOUR CALL!  Document-specific macros can come here.
+%*
+%****************************************************************************
+
+% If you use theoremes
+\newtheoremstyle{sw}% hnamei
+{3pt}% hSpace abovei
+{3pt}% hSpace belowi
+{}% hBody fonti
+{}% hIndent amounti1
+{\bf}% hTheorem head fontbf
+{}% hPunctuation after theorem headi
+{.5em}% hSpace after theorem headi2
+{}% hTheorem head spec (can be left empty, meaning `normal')i
+
+\theoremstyle{sw}
+\newtheorem{theorem}{Theorem}
+\renewcommand{\thetheorem}{ \arabic{theorem}}
+\newtheorem{corollary}[theorem]{Corollary}
+\renewcommand{\thecorollary}{\arabic{corollary}}
+\newtheorem{definition}{Definition}
+\renewcommand{\thedefinition}{\arabic{definition}}
+
+
+%#########################################################
+%*
+%*  The Document.
+%*
+\begin{document}
+
+%***************************************************************************
+% AUTHOR: AUTHOR NAMES GO HERE
+% FORMAT AUTHORS NAMES Like: Author1, Author2 and Author3 (last names)
+%
+%		You need to change the author listing below!
+%               Please list ALL authors using last name only, separate by a comma except
+%               for the last author, separate with "and"
+%
+\SWpagesetup{Monks, and Harper}
+
+% AUTHOR: Enter the title, all letters in upper case
+\title{A FRAMEWORK TO SHARE HEALTHCARE SIMULATIONS ON THE WEB USING FREE AND OPEN SOURCE TOOLS AND PYTHON}
+
+% AUTHOR: Enter the authors of the article, see end of the example document for further examples
+\author{\textit{Dr. Thomas Monks}\\ [11pt]
+University of Exeter\\
+%Exeter\\
+t.m.w.monks@exeter.ac.uk\\
+% Multiple authors are entered as follows.
+% You may also need to adjust the titlevbox size in the preamble - search for titlevboxsize
+\and
+\textit{Dr. Alison Harper}\\[11pt]
+University of Exeter\\
+%Exeter\\
+a.l.harper@exeter.ac.uk\\
+}
+
+\maketitle
+
+\section*{ABSTRACT}
+
+We present a simple framework to  support sharing of executable healthcare discrete-event simulation models in python over the web. Our sharing framework is based on combining remote version control repositories with free and open source software - Jupyter Notebooks, Jupyter Books, and streamlit  - along with free digital infrastructure provided by Binder, streamlit.io, GitHub
+pages, and open science repositories such as Zenodo. The framework enables executable models to be shared with users of different technical abilities: from coders to software literate users.  We provide an applied example including a full web application of an executable model.   Our framework aims to support NHS organisations to preview, validate, and use models. Academic research teams can also benefit from enhanced scrutiny of their work and long term archiving of models.  
+
+
+%\section*{Keywords:} alpha, beta
+
+\section{INTRODUCTION}
+\label{sec:intro}
+
+In the UK, health and social care research is often funded using public money.  This might be from a funder such as the National Institute for Health and Care Research (NIHR).  This money is part of the overall NHS budget.  Modelling and simulation within health and social care research often tackles very human problems as well. The systems being modelled affect hundreds, thousands, and potentially hundreds of thousands of people (infants, children, adults, carers, friends, family and potentially yourself) per year.  As such research using these funds must maximise transparency, re-usability, adaptability (by the NHS and other researchers), and reduce barriers to uptake by health systems, and scrutiny by research teams. These barriers can include cost (such as the license fees for purchasing a commercial off the shelf simulation package), technical skills (such as coding skills or use of commercial software), security (such as installation on NHS machines) and software dependency management.
+
+One possible route to enable sharing/reuse/adaptation and eliminate licensing costs is to adopt a Free and Open-Source Software (FOSS) for your modelling and simulation. FOSS is best defined using Stallman's four freedoms:
+
+\begin{enumerate}
+\setcounter{enumi}{-1}
+    \item The freedom to run the program as you wish, for any purpose.
+    \item The freedom to study how the program works, and change it so it does your computing as you wish. 
+    \item The freedom to redistribute copies so you can help your neighbour.
+    \item The freedom to distribute copies of your modified versions to others. By doing this you can give the whole community a chance to benefit from your changes.
+\end{enumerate}
+
+Note that FOSS here is more than simply open source code.  It grants the rights for users to adapt and distribute copies however they choose. FOSS software within a data science context is often provided with a \textit{permissive} type of license such as the MIT or BSD-2 licenses.  These grant the user the four freedoms (within commercial or non-commercial work), waive liability, and require crediting (citation) of that authors and software in subsequent work.
+
+Many FOSS simulation tools exist. For a full review of open source Discrete-Event Simulation (DES) software readers should refer to \citeN{dagkakis2016review}.  Here we limit our FOSS focus to tools in Python.  We choose Python as it is consistently ranked in the top 4 of StackOverFlows's most used programming languages (4th in 2022) and top 5 most loved programming languages by developers.  Python is also synonymous with \textit{modern data science} and is used extensively in research and development of computational methods and applications.
+
+FOSS and Python have gained significant popularity and use in the UK's NHS in recent years. This transformation has been inspired via communities such as NHS-Python (and NHS-R) as well as NHS-England promoting the use of FOSS tools \cite{nhs_england_os}.  However, widespread access to Python still remains challenging in the security conscious health care setting.  A big challenge is \textit{model installation} on locked down and controlled NHS machines. A possible solution to the installation problem is web based technology and in particular \textit{simulation on the web}.
+
+Here we adopt a straightforward definition of simulation on the web as a simulation model that has been deployed to a remote server, is accessed via a public web URL, and can be executed, in some manner with varying processing power, without local installation of any software or components.  The contribution of our paper is to propose a simple python based framework for sharing executable simulation models on the web via Binder, Streamlit and Github pages.
+
+\section{AIMS}
+\label{sec:aims}
+\begin{enumerate}
+    \item Briefly review related work in simulation FOSS simulation packages implemented in Python, and sharing simulations on the web;
+    \item Outline a straightforward framework for deploying a simulation developed in Python on the web for users of varying technical skills;
+    \item Provide an applied simulation example implementing our framework.
+    \item Provide guidance for modellers to begin sharing models via the web.
+\end{enumerate}
+
+\section{RELATED WORK}
+\subsection{Python discrete-event simulation tools}
+
+\citeN{dagkakis2016review} reviewed open source software for discrete-event simulation (DES). Their review identified three FOSS Python packages: Simpy \cite{simpy}, Pysimulator \cite{pfeiffer2012pysimulator} and ScipySim \cite{mcinnes2011scipysim}. PySimulator, and ScipySim were last updated in 2014, and 2010 respectively. Simpy has a process based simulation worldview and has continued to be maintained (last update Apr 2020). It has been used in several Operations Research relevant publications \cite{bovim_simulating_2021,allen_simulation_2020,monks2022open}. 
+
+An updated list of Python DES packages now includes Salabim \cite[MIT licensed, last updated Apr 2022]{van2018salabim}, Ciw \cite[MIT licensed; last updated Oct 2022]{ciw}, and de-sim \cite[MIT licensed, last updated Nov, 2020]{goldberg2020sim}. Salabim is a fork of Simpy2 and includes many simulation tools including automatic results collection and animation.  Ciw (the welsh word for queue) was developed at Cardiff University and allows users to very quickly build complex multi-class queuing networks. An advanced feature of Ciw is network deadlock detection. \citeN{palmer2021implementing} provide two reproducible, open source implementations of Ciw for hybrid modelling, archived here \cite{palmer_geraint_2021_4601529}.  De-sim is an object orientated (OO) framework for developing complex interacting DES models. The de-sim authors argue that their OO framework is an advancement over Simpy's process-based worldview; although we note that Simpy itself is highly flexible and can easily be used within an OO framework; for example see \cite{allen_simulation_2020}.
+
+\subsection{Sharing models on the web}
+
+The idea of simple sharing and executing simulations via the web is not a new one. \citeN{fishwick_web-based_1996} provides an early example of an executable queuing simulation model accessed via a public URL. Modern takes on simulation on the web include full Open Science Gateways that provide substantive e-infrastructure for controlled model access, parameterisation and execution. \citeN{anagnostou_building_2019} provide an impressive example of open science gateways in action using their PALMS model. 
+
+Simpler recent examples include a generic hospital ward model developed and made available online \cite{penn_towards_2020}, which aimed to address the issues raised in this paper. The Simul8 model is made available through Zenodo  - an open science repository  \cite{penn_marion_louise_2018_1468288}. The authors note that a weakness of their approach is that NHS users must purchase a COTS package license in order to reuse/adapt the model. \citeN{tyler_improving_2022} addressed the need to improve uptake and routine use of simulation by NHS analysts by developing an open source model using \textit{R} which supports user-defined configurations of patient pathways. The \textit{R Shiny} user interface improves usability and functionality, but the model needs to be downloaded and executed locally on the user's machine.  Similarly, an open, verifiable model to enable the organisation of dialysis outpatient services during the pandemic was developed by \citeN{allen_simulation_2020}. The code and documentation are available to download and a limited user interface to execute the model is provided via Binder. There is no support for experimentation. \citeN{monks2022open} proposed a 6-level framework for supporting M\&S open working, with a case study demonstrating an approach to achieving openness, including a simple, reproducible pipeline for sharing simulation experimentation and results. The focus of the paper is the practical issues to be considered with different levels of openness. 
+
+\section{A FRAMEWORK FOR SHARING PYTHON MODELS}
+\label{sec:methods}
+
+We developed a framework to allow an executable simulation model developed in Python to easily be shared to different classes of users with varying knowledge of coding, computer simulation, and software. Our first class considers more technical simulation users that have coding experience; for example NHS analysts or simulation researchers. Our second class of user assumes no experience of coding, but a general familiarity of using software. Figure \ref{fig:overview} provides an overview of our framework. In summary, we provide two approaches to sharing executable models:
+
+\begin{itemize}
+    \item FOSS licensed, interactive, and executable scientific notebooks using BinderHub;
+    \item A web app (browser based) model front end built via StreamLit and deployed via Streamlit.io
+\end{itemize}
+
+In addition to the sharing of executable python models our framework also supports enhanced model documentation and open working using  Github pages and an (interactive) Jupyter Book. 
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=1.0]{framework_diagram.jpg}
+\caption{Proposed sharing framework for Python models}
+\label{fig:overview}
+\end{figure}
+
+
+
+
+\subsection{Software environment specification}
+For any type of software deployment problem it is necessary to adopt a language that allows model developers to specify the software libraries, version numbers and sources that are required in order for the model to run. Three options of environment file exist for python: pip requirements, conda environments, and poetry. Our research often makes use of conda virtual environments that documents dependencies in the \textit{Yet Another Mark-up Language (.yml)} format. 
+
+% \begin{lstlisting}
+
+% name: treat_sim_dev
+% channels:
+%   - conda-forge
+% dependencies:
+%   - bokeh=2.4.3
+%   - matplotlib=3.3.4
+%   - numpy=1.19.2
+%   - pandas=1.2.3
+%   - pip=21.0.1
+%   - python=3.8.12
+%   - scipy=1.6.1
+%   - simpy=4.0.1
+% \end{lstlisting}
+
+\subsection{Licensing of research artefacts}
+Before sharing (or making any Python code public), it is essential that authors select an appropriate FOSS license for the code and other research artefacts.  This, for example, ensures appropriate use of the model and removes liability of the authors. A common approach in data science is to adopt a permissive license such as the MIT. See \citeN{monks2022open} for more details on licence types.
+
+\subsection{Python model}
+Our framework is general to any Python model and Python simulation package. For an application exemplar, we chose to use Simpy as our FOSS simulation package. Simpy provides a simple process based worldview simulation engine.  This simplicity makes the package highly flexible and usable in many simulation applications in healthcare. Our research group also has extensive experience of using it in real world simulation applications. One limitation of Simpy relative to commercial off the shelf simulation packages is the lack of a user friendly front end to control simulation execution, scenarios and results analysis.  The Python model should be independent of any \textit{front-end} and executable standalone.
+
+\subsection{Remote code repository}
+Central to Figure \ref{fig:overview} is a remote code repository.  The most popular solutions are GitHub, GitLab, and BitBucket.  Most developers opt for GitHub, but we recommend modellers consider the unique benefits and cons of each solution.  All code artefacts (including licence, meta-data files, and readme) should be committed to the remote repo to provide long lasting version control.  Some developers store data here too; although other specialist solutions exist for data version control.
+
+\subsection{Jupyter Notebooks}
+Project Jupyter is a FOSS project that supports scientific coding in Python, \textit{R} and Julia in a classical notebook format.  A simple way to conceptualise Jupyter notebooks are as browser based interface and an execution kernel.  The interface provides a set of markdown and code sells that a user can control. Markdown is simply a way to present formatted text, mathematics, and code together. As such an it provides an excellent way to explain, document and then execute simulation experiments. For example, an analyst may have created a set of Jupyter notebooks for model validation, determining the number of replications, warm-up analysis, defined experiments, or interactive experimentation.  
+
+Jupyter's kernel executes all of the code.  Typically the kernel is located on the users local machine.  But given the server nature of Jupyter, the kernel could be located on a remote (possibly powerful) machine.  In these remote cases the user need not have Python, Simpy, or Jupyter installed on their own machine.
+
+\subsection{Binderhub}
+
+Jupyter's use of the browser and ability to access a remote kernel allows for easy deployment of simulation notebooks to a technical user-base.  For example, well trained NHS analysts from the NHS-python / NHS-R community or other researchers familiar with reading and executing code.
+
+BinderHub provides a Jupyter environment in the cloud that others can use to run your simulation model.  One simple requirement is that the Python simulation model code, and Jupyter notebooks are available in a public respository hosted in the cloud; for example in GitHub or GitLab. 
+%added bit could be removed if too long.  
+%Binder works by on-demand containerisation of software dependencies and code. 
+
+\subsection{Streamlit and streamlit.io}
+
+A web app interface to the model is suitable for less technical simulation users such as NHS analysts with no coding experience, NHS managers, researchers not familiar with python, or the general public. A web app will provide simple ways to setup and execute the model. This might include parameter fields, logic diagrams, basic animation, and buttons.   
+
+StreamLit is a simple modern Python library that provides a way to script web applications. Streamlit has many built in controls and display functions, for buttons, sliders, text fields, tables, and charts. Using Streamlit, it is possible to create a very simple simulation app with only a few lines of code; for example, basic parameter settings, an execute button, and results displayed as a table in the browser.  \url{StreamLit.io } is a free hosting service for Streamlit apps.  When used together they provide a robust and easy way to share simulation models to healthcare users. \textit{These models can then be accessed from any device}.  For example, models can be executed from a phone or a tablet instead of traditional laptop or desktop environment. 
+
+\subsubsection{Documentation via Jupyter Book and Github Pages}
+
+While not strictly required for sharing the simulation model our framework advocates that any simulation used for health decision making should provide open and high quality documentation on how the model is implemented and works.  In our example, we provide a link to another web based technology: a Jupyter Book deployed in GitHub pages \url{https://tommonks.github.io/treatment-centre-sim}.  Jupyter Book is a high level tool to create a structured website based on meta-data (a table of contents and config file), markdown, and Jupyter Notebooks. GitHub Pages is a free web hosting service provided by GitHub (owned by Microsoft). As such it can publish cleanly annotated Python code describing the working of each component within the model.  In our example, we have supplemented this with discrete sections for the Strengthening the Reporting of Empirical Simulation Studies (STRESS) for DES models \cite{monks2019strengthening}.
+
+One benefit of a Jupyter Book deployed on the web in this manner is that it automatically provides links to BinderHub. This means that different parts of the model and model process (such as model testing) can be viewed on a static website and then opened live to run via a link in the book if desired. A second benefit of online documentation managed with Jupyter book is that we have provided a simple mechanism for users/readers to provided feedback (such as queries, clarification requests, and bug reports).  Within our Jupyter Book we have provided \textit{contribution} guidelines and and implemented the technology using GitHub Issues.  The latter allows a conversation between authors and contributors to facilitate improvement in the documentation and model web app. 
+
+\subsection{Open Science Repository}
+
+Lastly, for long term archiving (and preservation) of simulation models our framework links code in the remote repository to an open science repository. Examples, include Figshare, Zenodo, and the Open Science Framework. Each of these has has guarantees on storage and mints DOIs to enable citation and improve discoverability.
+
+\section{APPLIED EXAMPLE}
+
+This section describes a text-book simulator implemented in Python and shared via our framework. In addition to the code we provide, we include some basic instructions for use of Binder and required modifications to sharing desktop based simulations.
+
+\subsection{Case study model}
+
+We adapt a textbook example from Nelson \cite[p.170]{nelson2013}: a discrete-event simulation model of a U.S based treatment centre. In the model, patients arrive to the health centre between 6am and 12am following a non-stationary Poisson process. On arrival, all patients sign-in and are triaged into two classes: trauma and non-trauma. Trauma patients include impact injuries, broken bones, strains or cuts etc. Non-trauma include acute sickness, pain, and general feelings of being unwell etc. Trauma patients must first be stabilised in a trauma room. These patients then undergo treatment in a cubicle before being discharged. Non-trauma patients go through registration and examination activities. A proportion of non-trauma patients require treatment in a cubicle before being discharged. The model predicts waiting time and resource utilisation statistics for the treatment centre. The model allows managers to ask question about the physical design and layout of the treatment centre, the order in which patients are seen, the diagnostic equipment needed by patients, and the speed of treatments. For example: “what if we converted a doctors examination room into a room where nurses assess the urgency of the patients needs.”; or “what if the number of patients we treat in the afternoon doubled”.
+
+\subsection{Code and software}
+
+We have shared our code via GitHub. Binder examples can be found at \url{https://github.com/TomMonks/treatment-centre-sim} while the Streamlit example can be found at \url{https://github.com/TomMonks/treat_sim_streamlit}. We used Conda to manage our dependencies.  In summary, we used Python 3.8. Data manipulation, simulation, and general mathematical modeling were done using Simpy v4.0.1 \cite{simpy}, NumPy v1.19.2 \cite{numpy} and Pandas v1.2.3 \cite{mckinney2011pandas}. Charts were produced with MatPlotLib v3.3.4 \cite{Hunter:2007}. All analyses were conducted in Jupyter-Lab v2.4.3 \cite{jupyterlab_jupyterlab_2022}. The web app was produced using StreamLit v1.13.0 \cite{streamlit}.  Documentation was created using Jupyter Book v0.13.1 \cite{executable_books_community_2020_4539666}. 
+
+\subsection{Binder}
+
+For this example, we have created a simulation model and committed the code to a public GitHub repository \url{https://github.com/TomMonks/treatment-centre-sim}.  Binder expects that a conda virtual \verb|environment.yml| file is placed into a sub-directory \verb|binder/|. Once this has been committed it is a simple case of navigating to \url{https://mybinder.org/} and copy and pasting the URL into the build and launch text box. Binder will then create a remote instance that contains both your code and dependencies specified in the \verb|binder/environment.yml| file.  The first time the instance is built it will likely take several minutes.  This process may be need to be repeated if the instance is not used regularly.  The setup form is illustrated by Figure \ref{fig:biunder}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.3]{binder_example.png}
+\caption{Binderhub setup}
+\label{fig:biunder}
+\end{figure}
+
+We invite interested readers to launch our treatment sim instance on Binder via the following link: \url{https://bit.ly/treat_sim_binder}.  The model notebook can be found \verb|src/model.ipynb|.  You should be presented with a notebook in Figure \ref{fig:jupyter}.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.20]{jupyter.png}
+\caption{Simulation model running in binderhub}
+\label{fig:jupyter}
+\end{figure}
+
+
+\subsection{StreamLit.io App}
+
+Our Streamlit implementation of the case study model can be accessed via \url{https://treat-sim.streamlitapp.com}. To create the Streamlit app we logged into streamlit.io, created a new app, and specified the GitHub repo plus app launch file (Overview.py). Streamlit.io requires information on app dependencies.  We used a pip \verb|requirements.txt|.  The initial build is automatic and takes 5-10 minutes. Figure \ref{fig:app} illustrates the interactive simulation page of our app.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.18]{web_app_screenshot.png}
+\caption{Treatment centre user interactive simulation  }
+\label{fig:app}
+\end{figure}
+
+\section{GUIDELINES FOR SHARING MODELS VIA STREAMLIT}
+
+When deployed, a Streamlit application must be thought of as a remote instance of a simulation model in the cloud. The model is accessed via a URL. Each user that accesses the URL is provided with a unique instance of the web app (i.e. it is not shared between users). To be successful, a \textbf{slight change} in a developers way of thinking is needed as you are working with an instance of a web application as opposed to a model on a local machine. 
+
+\subsection{Parameterisation}
+
+A simulation model that will be executed by clients and people other than those that developed it will typically provide a way to parameterise a model for one or more experiments.  Two such ways are:
+
+\begin{itemize}
+    \item Default parameters, interactive controls, and fields built into the simulation interface;
+    \item An external file that contains parameter configurations for a single or multiple experiments.
+\end{itemize}
+
+The first of these options is perhaps best used for setting up a singular experimental run of the model.  For example, one or multiple replications of the model to test if changing a parameter has an impact on results.  For interactive simulation of this type a web app requires no modification from classical desktop simulation.  For example, a set of sliders representing model parameters, each with a default value, could be provided for users to manipulate and rerun the model.
+
+The second of these options in its simplest form might use a format such as a Comma Separated Values (.CSV), containing a simple row and column format for experiment and parameters.  The user would populate (or more likely modify) these parameters in some way before a simulation model loads the parameters on each run.  If a simulation model is deployed via a web-app the model may be setup with an option for a user to \textit{upload} the CSV file to the instance (e.g. by click and dragging a file into a web form). It is recommended that an example file is provided. The format might vary depending on the application, for example, a format might be rows of named experiments and columns of parameter values (or vice versa). One option is for the web-app to auto-generate an exemplar file that a user can download, modify, and then upload.  A secondary option for parameterisation to specify a URL where parameter data are stored.  This would still require a user to ensure the data are in the correct location and it may be simpler to upload directly. Alternatively an application might allow a user to specify a Digital Object Identifier (DOI) where data are stored.  This latter option might be useful if the web app is part of a publication and a permanent record of data used in experiments is required.  
+
+
+\subsection{Results Visualisation}
+
+One significant advantage of developing a front end to the simulation model in Python is the opportunity to produce publication quality charts and outputs directly from each run of the model and then allow a user to export them.  For example, Python's Matplotlib library could be used to create a Measure of Risk and Error (MORE) plot after a user specified experiment. These packages offer superior plotting options and output resolution than utilities found in a typical spreadsheet package, or specialist simulation tool. Once a model run is complete, a high resolution image, meeting printing specifications such as DPI $> 300$, can then be downloaded by the user.  Of course, like desktop simulation packages the data underlying plots might be of more interest to users; particularly if they wish to create a custom set of plots.  In these cases web-apps need to provide the functionality to \textit{download} the data in a suitable file format (for example, a CSV file).  Another option is to allow a user to copy data from the web-app to the local machine's clipboard.  The data can then be pasted into whatever software the users desires; for example, a spreadsheet or statistical analysis package.  In these instances, the developer needs to remember that the data reside on a remote instance of the model not the local machine. For external plotting web-apps may also contain links to (or generate) Python code templates that users can use to quickly produce plots and customise.
+
+%\begin{figure}[ht]
+%\centering
+%\includegraphics[scale=0.4]{more_plot.png}
+%\caption{Binderhub setup}
+%\label{fig:more}
+%\end{figure}
+
+Many interactive visualisation technologies have been developed in Python for web applications.  Two such powerful and popular visualisation libraries are bokeh and plotly.  Interactive options might include `hover and see more detail', such as data point values, or zooming in on different parts of a plot, for example in the case of a time series plot.
+    
+\subsection{Content and organisation}
+ 
+The digital content that is included with a simulation model deployed online will vary depending on the use case.  However, we recommend that developers consider a number of simple options to enhance user experience for the model.  Our basic guidelines include:
+
+\begin{itemize}
+    \item A non-expert summary of model and its use
+    \item Interactive experimentation options
+    \item Advanced experimentation or experimental design (aka scenario analysis) facilities
+    \item A page describing the project and funding used to develop the model
+    \item Model citation instructions
+    \item Links to any external code repositories and model technical documentation
+\end{itemize}
+
+With a Streamlit implementation of a Python simulation model we propose that these can be organised as separate \textit{pages} within the web app.  The user can then navigate to the appropriate page to access the functionality.  A developer will need to decide on a \textit{landing page} for the app.  In our example, we have opted for the non-expert summary. Writing a non-expert summary is a non-trivial task and out of scope of this article. It is worth noting that a health care simulation deployed via a web-app may be private to an organisation, organisational sub-group such as a department or team, or as in the case of \url{streamlit.io} public on the internet. Particularly in the latter case we recommend a high quality non-expert summary that provides a general overview of the model along with its use case. 
+
+\section{DISCUSSION}
+
+We present a simple, practical framework for sharing free and open simulation of healthcare systems developed in Python. 
+
+\subsection{Strengths and contributions}
+
+Our FOSS approach benefits health services, such as the NHS in the UK, students of simulation and researchers other than the authors of the original simulation. Our framework has the following benefits for the simulation and health services communities:
+
+\subsection*{\textit{Previewing models for potential users}}
+
+The FOSS tools within our framework enable potential users of a model to test it out without going through any installation, source, or dependency management. This can enable fast feedback and revision of a model to fix mistakes or better meet user requirements. More technical users have direct access to executable code in this process.
+
+\subsection*{\textit{Sharing runnable code with an organisation that cannot run python}}
+
+NHS organisations have slowly been adopting Python, but when working with new organisations IT departments may be initially reluctant to allow model installation. Python and other free and open software are sometimes viewed with suspicion by IT departments and cannot be installed on a collaborators machine.  
+
+\subsection*{\textit{Making the results of a publication repeatable}}
+
+In science, particularly within computational science, there’s a concept called the \textit{reproducibility crisis}. This is a problem with understanding how results of a particular study were generated, and an inability to (fully) reproduce (repeat) the results with the same code and data. In lay terms it means that most academic authors write a nicely crafted paper that doesn’t manage to fully reveal how they got the figures they reported in their simulation study. Modern simulation projects are complicated and writing up a brief summary of methods may fail to enable reuse, verification, or peer learning. Our framework supports 
+authors to provide an executable version of their model with their publications.
+
+\subsection{Limitations}
+
+Our framework aims to share Python models, although several of technologies used are language agnostic and overall it is easily adapted for \textit{R} and to some extent Julia. Modifications for \textit{R} would include switching from StreamLit to \textit{R Shiny} (and \url{Shinyapps.io}). \textit{R} users are less likely to be familiar with rigorous dependency management than Python and Julia developers; however, dependency management can be achieved via the \textit{renv} library (or to a lesser extent via conda). Julia currently lacks a native StreamLit, equivalent, but our framework would allow sharing with more technical users.  
+A limitation of all free remote hosting services is the amount of compute available. For expensive computer simulation, two potential modifications could be considered. The first is to pay to host a web app (or Binder server) that provides sufficient compute (e.g via Heroku). The second is to \textit{containerise} the app and model via a technology such as \textit{docker} and \textit{dockerhub}.  Model users will require docker installed on their local machine in order to run it.  One drawback is that for commercial organisations this will involve a licence fee.
+
+\section*{ACKNOWLEDGEMENTS}
+This article is independent research supported by the National Institute for Health and Care Research Applied Research Collaboration South West Peninsula. The views expressed in this publication are those of the author(s) and not necessarily those of the National Institute for Health and Care Research or the Department of Health and Social Care.
+
+% Please don't exchange the bibliographystyle style
+\bibliographystyle{sw}
+% AUTHOR: Include your bib file here
+\bibliography{ref.bib}
+
+\section*{AUTHOR BIOGRAPHIES}
+
+\noindent {\bf THOMAS MONKS} is Associate Professor of Health Data Science at University of Exeter Medical School and Turing Fellow at the Alan Turing Institute. His email address is \email{t.m.w.monks@exeter.ac.uk}. His website is \url{https://arc-swp.nihr.ac.uk/about-penarc/people/tom-monks/}. \\
+
+
+\noindent {\bf ALISON HARPER} is an ESRC post-doctoral Research Fellow at the University of Exeter Medical School, in the Peninsula Collaboration for Health Operational Research and Development. Her email address is \email{a.l.harper@exeter.ac.uk}.\\
+
+
+
+\end{document}
+
